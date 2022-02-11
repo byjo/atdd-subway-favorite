@@ -10,9 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @Transactional
@@ -52,5 +53,18 @@ class FavoriteServiceTest {
         assertThatThrownBy(() -> {
             favoriteService.saveFavorite(회원, favoriteRequest);
         }).isInstanceOf(FavoriteException.Duplicated.class);
+    }
+
+    @Test
+    void findFavorites() {
+        FavoriteRequest favoriteRequest = new FavoriteRequest(강남역.getId(), 판교역.getId());
+        favoriteService.saveFavorite(회원, favoriteRequest);
+
+        List<FavoriteResponse> favorites = favoriteService.findFavorites(회원);
+        assertThat(favorites).hasSize(1);
+
+        FavoriteResponse first = favorites.get(0);
+        assertThat(first.getSource().getId()).isEqualTo(강남역.getId());
+        assertThat(first.getTarget().getId()).isEqualTo(판교역.getId());
     }
 }

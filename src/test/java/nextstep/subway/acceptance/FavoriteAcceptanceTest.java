@@ -30,11 +30,8 @@ public class FavoriteAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 즐겨찾기_생성_응답 = FavoriteSteps.즐겨찾기_생성_요청(강남역, 판교역, accessToken);
         FavoriteSteps.즐겨찾기_생성됨(즐겨찾기_생성_응답);
 
-        // when
-        // 즐겨찾기 목록을 조회한다.
-
-        // then
-        // 생성한 즐겨찾기 정보가 맞는지 확인한다.
+        ExtractableResponse<Response> 즐겨찾기_조회_응답 = FavoriteSteps.즐겨찾기_조회_요청(accessToken);
+        FavoriteSteps.즐겨찾기_목록_조회됨(즐겨찾기_조회_응답, 강남역, 판교역);
 
         // when
         // 즐겨찾기를 삭제한다.

@@ -7,6 +7,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -34,4 +36,9 @@ public class FavoriteService {
         }
     }
 
+    public List<FavoriteResponse> findFavorites(Long memberId) {
+        return favoriteRepository.findByMemberId(memberId).stream()
+                .map(FavoriteResponse::of)
+                .collect(Collectors.toList());
+    }
 }

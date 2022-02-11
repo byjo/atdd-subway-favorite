@@ -15,6 +15,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,6 +32,7 @@ class FavoriteServiceMockTest {
     private Station 강남역;
     private Station 판교역;
     private Favorite 즐겨찾기;
+    private static final Long 회원_ID = 1L;
 
     @BeforeEach
     void setUp() {
@@ -51,9 +54,23 @@ class FavoriteServiceMockTest {
     @Test
     void saveFavorite() {
         FavoriteRequest favoriteRequest = new FavoriteRequest(강남역.getId(), 판교역.getId());
-        FavoriteResponse favorite = favoriteService.saveFavorite(1L, favoriteRequest);
+        FavoriteResponse favorite = favoriteService.saveFavorite(회원_ID, favoriteRequest);
 
         assertThat(favorite.getSource().getId()).isEqualTo(강남역.getId());
         assertThat(favorite.getTarget().getId()).isEqualTo(판교역.getId());
+    }
+
+    @Test
+    void findFavorites() {
+        FavoriteRequest favoriteRequest = new FavoriteRequest(강남역.getId(), 판교역.getId());
+        favoriteService.saveFavorite(회원_ID, favoriteRequest);
+        Mockito.when(favoriteRepository.findByMemberId(회원_ID)).thenReturn(Collections.singletonList(즐겨찾기));
+
+        List<FavoriteResponse> favorites = favoriteService.findFavorites(회원_ID);
+        assertThat(favorites).hasSize(1);
+
+        FavoriteResponse first = favorites.get(0);
+        assertThat(first.getSource().getId()).isEqualTo(강남역.getId());
+        assertThat(first.getTarget().getId()).isEqualTo(판교역.getId());
     }
 }
