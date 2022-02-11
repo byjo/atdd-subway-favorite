@@ -33,11 +33,10 @@ public class FavoriteAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 즐겨찾기_조회_응답 = FavoriteSteps.즐겨찾기_조회_요청(accessToken);
         FavoriteSteps.즐겨찾기_목록_조회됨(즐겨찾기_조회_응답, 강남역, 판교역);
 
-        // when
-        // 즐겨찾기를 삭제한다.
+        Long 즐겨찾기 = 즐겨찾기_조회_응답.jsonPath().getLong("[0].id");
 
-        // then
-        // 즐겨찾기 삭제를 확인한다. status code + 생성한 id 기반 조회
+        ExtractableResponse<Response> 즐겨찾기_삭제_응답 = FavoriteSteps.즐겨찾기_삭제_요청(accessToken, 즐겨찾기);
+        FavoriteSteps.즐겨찾기_삭제됨(즐겨찾기_삭제_응답, accessToken);
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {

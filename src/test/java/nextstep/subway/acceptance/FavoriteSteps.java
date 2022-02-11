@@ -37,6 +37,16 @@ public class FavoriteSteps {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 즐겨찾기_삭제_요청(String accessToken, Long favoriteId) {
+        return RestAssured
+                .given().log().all()
+                .auth().oauth2(accessToken)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/favorites/{favoriteId}", favoriteId)
+                .then().log().all().extract();
+    }
+
     public static void 즐겨찾기_생성됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -48,5 +58,12 @@ public class FavoriteSteps {
         assertThat(favorites).hasSize(1);
         assertThat(favorites.get(0).getSource().getId()).isEqualTo(sourceId);
         assertThat(favorites.get(0).getTarget().getId()).isEqualTo(targetId);
+    }
+
+    public static void 즐겨찾기_삭제됨(ExtractableResponse<Response> response, String accessToken) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 즐겨찾기_목록 = 즐겨찾기_조회_요청(accessToken);
+        assertThat(즐겨찾기_목록.jsonPath().getList("")).hasSize(0);
     }
 }
