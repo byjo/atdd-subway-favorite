@@ -66,4 +66,8 @@ public class FavoriteSteps {
         ExtractableResponse<Response> 즐겨찾기_목록 = 즐겨찾기_조회_요청(accessToken);
         assertThat(즐겨찾기_목록.jsonPath().getList("")).hasSize(0);
     }
+
+    public static void 권한없음(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
 }
