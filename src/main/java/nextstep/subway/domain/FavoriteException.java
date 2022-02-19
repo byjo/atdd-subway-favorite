@@ -10,4 +10,10 @@ public class FavoriteException extends RuntimeException {
             super("Duplicated Favorite");
         }
     }
+
+    public static class UnauthorizedMember extends FavoriteException {
+        public UnauthorizedMember() {
+            super("Unauthorized member request");
+        }
+    }
 }
