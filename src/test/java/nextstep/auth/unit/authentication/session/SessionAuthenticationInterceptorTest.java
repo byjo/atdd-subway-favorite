@@ -1,7 +1,6 @@
 package nextstep.auth.unit.authentication.session;
 
 import nextstep.auth.authentication.*;
-import nextstep.auth.authentication.session.SessionAuthenticationConverter;
 import nextstep.auth.authentication.session.SessionAuthenticationInterceptor;
 import nextstep.auth.unit.authentication.MockAuthenticationRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,16 +29,26 @@ class SessionAuthenticationInterceptorTest {
         Mockito.when(userDetailsService.loadUserByUsername(EMAIL)).thenReturn(expectedUserDetails);
 
         ProviderManager providerManager = new ProviderManager(Collections.singletonList(new UsernamePasswordAuthenticationProvider(userDetailsService)));
-        interceptor = new SessionAuthenticationInterceptor(new SessionAuthenticationConverter(), providerManager);
+        interceptor = new SessionAuthenticationInterceptor(providerManager);
     }
 
     @Test
-    void preHandle() throws IOException {
+    void success() throws IOException {
         HttpServletRequest request = MockAuthenticationRequest.createSessionRequest(EMAIL, PASSWORD);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         interceptor.preHandle(request, response, null);
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Test
+    void fail() throws IOException {
+        HttpServletRequest request = MockAuthenticationRequest.createSessionRequest(EMAIL + "test", PASSWORD);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        interceptor.preHandle(request, response, null);
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }

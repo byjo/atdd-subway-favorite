@@ -3,7 +3,6 @@ package nextstep.auth.unit.authentication.token;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.auth.authentication.*;
-import nextstep.auth.authentication.token.TokenAuthenticationConverter;
 import nextstep.auth.authentication.token.TokenAuthenticationInterceptor;
 import nextstep.auth.token.JwtTokenProvider;
 import nextstep.auth.unit.authentication.MockAuthenticationRequest;
@@ -40,11 +39,11 @@ class TokenAuthenticationInterceptorTest {
         Mockito.when(jwtTokenProvider.createToken(anyString())).thenReturn(JWT_TOKEN);
 
         ProviderManager providerManager = new ProviderManager(Collections.singletonList(new UsernamePasswordAuthenticationProvider(userDetailsService)));
-        interceptor = new TokenAuthenticationInterceptor(jwtTokenProvider, objectMapper, new TokenAuthenticationConverter(objectMapper), providerManager);
+        interceptor = new TokenAuthenticationInterceptor(jwtTokenProvider, objectMapper, providerManager);
     }
 
     @Test
-    void preHandle() throws IOException {
+    void success() throws IOException {
         HttpServletRequest request = MockAuthenticationRequest.createTokenRequest(EMAIL, PASSWORD);
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -53,5 +52,15 @@ class TokenAuthenticationInterceptorTest {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
         Map<String, Object> body = objectMapper.readValue(response.getContentAsString(), new TypeReference<HashMap<String,Object>>() {});
         assertThat(body.get("accessToken")).isEqualTo(JWT_TOKEN);
+    }
+
+    @Test
+    void fail() throws IOException {
+        HttpServletRequest request = MockAuthenticationRequest.createTokenRequest(EMAIL + "test", PASSWORD);
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        interceptor.preHandle(request, response, null);
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }

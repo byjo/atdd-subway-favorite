@@ -17,6 +17,7 @@ public class SessionSecurityContextPersistenceInterceptorTest {
     @BeforeEach
     void setUp() {
         interceptor = new SessionSecurityContextPersistenceInterceptor();
+        SecurityContextHolder.clearContext();
     }
 
     @Test

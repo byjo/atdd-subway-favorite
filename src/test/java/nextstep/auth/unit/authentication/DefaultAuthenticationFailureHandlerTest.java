@@ -29,6 +29,6 @@ class DefaultAuthenticationFailureHandlerTest {
         MockHttpServletResponse response = new MockHttpServletResponse();
         handler.handle(request, response, new AuthenticationException());
 
-        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
     }
 }

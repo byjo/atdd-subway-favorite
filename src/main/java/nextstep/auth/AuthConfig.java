@@ -36,8 +36,8 @@ public class AuthConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         ProviderManager providerManager = new ProviderManager(providers());
 
-        registry.addInterceptor(new SessionAuthenticationInterceptor(new SessionAuthenticationConverter(), providerManager)).addPathPatterns("/login/session");
-        registry.addInterceptor(new TokenAuthenticationInterceptor(jwtTokenProvider, objectMapper, new TokenAuthenticationConverter(objectMapper), providerManager)).addPathPatterns("/login/token");
+        registry.addInterceptor(new SessionAuthenticationInterceptor(providerManager)).addPathPatterns("/login/session");
+        registry.addInterceptor(new TokenAuthenticationInterceptor(jwtTokenProvider, objectMapper, providerManager)).addPathPatterns("/login/token");
         registry.addInterceptor(new SessionSecurityContextPersistenceInterceptor());
         registry.addInterceptor(new TokenSecurityContextPersistenceInterceptor(jwtTokenProvider));
     }

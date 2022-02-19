@@ -10,20 +10,30 @@ import java.io.IOException;
 public abstract class AbstractAuthenticationInterceptor implements HandlerInterceptor {
     private final AuthenticationConverter converter;
     private final ProviderManager providerManager;
+    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final AuthenticationFailureHandler authenticationFailureHandler;
 
-    public AbstractAuthenticationInterceptor(AuthenticationConverter converter, ProviderManager providerManager) {
+    public AbstractAuthenticationInterceptor(AuthenticationConverter converter, ProviderManager providerManager, AuthenticationSuccessHandler authenticationSuccessHandler) {
+        this(converter, providerManager, authenticationSuccessHandler, new DefaultAuthenticationFailureHandler());
+    }
+
+    public AbstractAuthenticationInterceptor(AuthenticationConverter converter, ProviderManager providerManager, AuthenticationSuccessHandler authenticationSuccessHandler, AuthenticationFailureHandler authenticationFailureHandler) {
         this.converter = converter;
         this.providerManager = providerManager;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.authenticationFailureHandler = authenticationFailureHandler;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        AuthenticationToken token = converter.convert(request);
-        Authentication authentication = providerManager.authenticate(token);
+        try {
+            AuthenticationToken token = converter.convert(request);
+            Authentication authentication = providerManager.authenticate(token);
+            authenticationSuccessHandler.handle(request, response, authentication);
+        } catch (AuthenticationException e) {
+            authenticationFailureHandler.handle(request, response, e);
+        }
 
-        afterAuthentication(request, response, authentication);
         return false;
     }
-
-    protected abstract void afterAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException;
 }
